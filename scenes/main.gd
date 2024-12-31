@@ -1,23 +1,23 @@
 extends Node
 
-@export var snake_scene : PackedScene
+@export var snake_scene: PackedScene
 
 #game variables
-var score : int
-var game_started : bool = false
+var score: int
+var game_started: bool = false
 
 #grid variables
-var cells : int = 20
-var cell_size : int = 50
+var cells: int = 20
+var cell_size: int = 50
 
 #food variables
-var food_pos : Vector2
-var regen_food : bool = true
+var food_pos: Vector2
+var regen_food: bool = true
 
 #snake variables
-var old_data : Array
-var snake_data : Array
-var snake : Array
+var old_data: Array
+var snake_data: Array
+var snake: Array
 
 #movement variables
 var start_pos = Vector2(9, 9)
@@ -25,7 +25,7 @@ var up = Vector2(0, -1)
 var down = Vector2(0, 1)
 var left = Vector2(-1, 0)
 var right = Vector2(1, 0)
-var move_direction : Vector2
+var move_direction: Vector2
 var can_move: bool
 
 # Called when the node enters the scene tree for the first time.
@@ -57,9 +57,8 @@ func add_segment(pos):
 	SnakeSegment.position = (pos * cell_size) + Vector2(0, cell_size)
 	add_child(SnakeSegment)
 	snake.append(SnakeSegment)
-	
-# Called every frame. 'delta' is the elapsed time since the previous frame.
-func _process(delta):
+
+func _process(_delta):
 	move_snake()
 	
 func move_snake():
@@ -130,7 +129,7 @@ func move_food():
 		for i in snake_data:
 			if food_pos == i:
 				regen_food = true
-	$Food.position = (food_pos * cell_size)+ Vector2(0, cell_size)
+	$Food.position = (food_pos * cell_size) + Vector2(0, cell_size)
 	regen_food = true
 
 func end_game():
