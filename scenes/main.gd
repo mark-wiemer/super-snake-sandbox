@@ -2,24 +2,24 @@ extends Node
 
 @export var snake_scene: PackedScene
 
-#game variables
+# game variables
 var score: int
 var game_started: bool = false
 
-#grid variables
+# grid variables
 var cells: int = 20
 var cell_size: int = 50
 
-#food variables
+# food variables
 var food_pos: Vector2
 var regen_food: bool = true
 
-#snake variables
+# snake variables
 var old_data: Array
 var snake_data: Array
 var snake: Array
 
-#movement variables
+# movement variables
 var start_pos = Vector2(9, 9)
 var up = Vector2(0, -1)
 var down = Vector2(0, 1)
@@ -28,16 +28,23 @@ var right = Vector2(1, 0)
 var move_direction: Vector2
 var can_move: bool
 
-# Called when the node enters the scene tree for the first time.
+# region Built-in functions
+#* Called when the node enters the scene tree for the first time.
 func _ready():
 	new_game()
-	
+
+#* Called every frame--
+func _process(_delta):
+	read_input()
+# endregion
+
+# region "New game" functions
 func new_game():
 	get_tree().paused = false
-	get_tree().call_group("segments", "queue_free")
+	get_tree().call_group("segments", "queue_free") # remove old segments
 	$GameOverMenu.hide()
 	score = 0
-	$Hud.get_node("ScoreLabel").text = "SCORE: " + str(score)
+	$Hud.get_node("ScoreLabel").text = "Score: " + str(score)
 	move_direction = up
 	can_move = true
 	generate_snake()
@@ -47,7 +54,6 @@ func generate_snake():
 	old_data.clear()
 	snake_data.clear()
 	snake.clear()
-	#starting with the start_pos, create tail segments vertically down
 	for i in range(3):
 		add_segment(start_pos + Vector2(0, i))
 		
@@ -58,12 +64,14 @@ func add_segment(pos):
 	add_child(SnakeSegment)
 	snake.append(SnakeSegment)
 
-func _process(_delta):
-	move_snake()
+func start_game():
+	game_started = true
+	$MoveTimer.start()
+# endregion
 	
-func move_snake():
+func read_input():
 	if can_move:
-		#update movement from keypresses
+		# update movement from keypresses
 		if Input.is_action_just_pressed("move_down") and move_direction != up:
 			move_direction = down
 			can_move = false
@@ -85,19 +93,14 @@ func move_snake():
 			if not game_started:
 				start_game()
 
-func start_game():
-	game_started = true
-	$MoveTimer.start()
-
-
 func _on_move_timer_timeout():
-	#allow snake movement
+	# allow snake movement
 	can_move = true
-	#use the snake's previous position to move the segments
+	# use the snake's previous position to move the segments
 	old_data = [] + snake_data
 	snake_data[0] += move_direction
 	for i in range(len(snake_data)):
-		#move all the segments along by one
+		# move all the segments along by one
 		if i > 0:
 			snake_data[i] = old_data[i - 1]
 		snake[i].position = (snake_data[i] * cell_size) + Vector2(0, cell_size)
@@ -115,10 +118,10 @@ func check_self_eaten():
 			end_game()
 			
 func check_food_eaten():
-	#if snake eats the food, add a segment and move the food
+	# if snake eats the food, add a segment and move the food
 	if snake_data[0] == food_pos:
 		score += 1
-		$Hud.get_node("ScoreLabel").text = "SCORE: " + str(score)
+		$Hud.get_node("ScoreLabel").text = "Score: " + str(score)
 		add_segment(old_data[-1])
 		move_food()
 	
