@@ -24,7 +24,7 @@ var up = Vector2(0, -1)
 var down = Vector2(0, 1)
 var left = Vector2(-1, 0)
 var right = Vector2(1, 0)
-var move_direction: Vector2
+var direction_queue = [up]
 
 # region Built-in functions
 #* Called when the node enters the scene tree for the first time.
@@ -43,7 +43,7 @@ func new_game():
 	$GameOverMenu.hide()
 	score = 0
 	$Hud.get_node("ScoreLabel").text = "Score: " + str(score)
-	move_direction = up
+	direction_queue = [up]
 	generate_snake()
 	move_food()
 	start_game()
@@ -68,16 +68,22 @@ func start_game():
 	
 func read_input():
 	# update movement from keypresses
+	var move_direction = direction_queue.back()
 	if Input.is_action_just_pressed("move_down") and move_direction != up:
-		move_direction = down
+		direction_queue.push_back(down)
 	if Input.is_action_just_pressed("move_up") and move_direction != down:
-		move_direction = up
+		direction_queue.push_back(up)
 	if Input.is_action_just_pressed("move_left") and move_direction != right:
-		move_direction = left
+		direction_queue.push_back(left)
 	if Input.is_action_just_pressed("move_right") and move_direction != left:
-		move_direction = right
+		direction_queue.push_back(right)
 
 func _on_move_timer_timeout():
+	#	Remove the previous direction and jump straight to the next one
+	if (direction_queue.size() > 1):
+		direction_queue.pop_front()
+	var move_direction = direction_queue.front()
+
 	# use the snake's previous position to move the segments
 	old_data = [] + snake_data
 	snake_data[0] += move_direction
