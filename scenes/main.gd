@@ -15,9 +15,8 @@ var food_pos: Vector2
 var regen_food: bool = true
 
 # snake variables
-var old_data: Array
-var snake_data: Array
-var snake: Array
+var snake: Array[Vector2]
+var snake_segments: Array[Node]
 
 # movement variables
 var start_pos = Vector2(9, 9)
@@ -42,6 +41,7 @@ func new_game():
 	game_over = false
 	get_tree().paused = false
 	get_tree().call_group("segments", "queue_free") # remove old segments
+	snake_segments.clear() # clear the array of freed segments
 	$GameOverMenu.hide()
 	score = 0
 	$Hud.get_node("ScoreLabel").text = "Score: " + str(score)
@@ -51,18 +51,21 @@ func new_game():
 	start_game()
 	
 func generate_snake():
-	old_data.clear()
-	snake_data.clear()
 	snake.clear()
-	for i in range(3):
-		add_segment(start_pos + Vector2(0, i))
+	var initial_length = 3
+	for i in range(initial_length):
+		add_segment(start_pos + Vector2(0, initial_length - i))
 		
 func add_segment(pos):
-	snake_data.append(pos)
+	snake.push_front(pos)
 	var SnakeSegment = snake_scene.instantiate()
 	SnakeSegment.position = (pos * cell_size) + Vector2(0, cell_size)
 	add_child(SnakeSegment)
-	snake.append(SnakeSegment)
+	snake_segments.push_front(SnakeSegment)
+
+func remove_tail():
+	snake.pop_back()
+	snake_segments.pop_back().free()
 
 func start_game():
 	$MoveTimer.start()
@@ -86,45 +89,51 @@ func _on_move_timer_timeout():
 		direction_queue.pop_front()
 	var move_direction = direction_queue.front()
 
-	# use the snake's previous position to move the segments
-	old_data = [] + snake_data
-	snake_data[0] += move_direction
-	check_out_of_bounds()
-	check_self_eaten()
-	if (game_over):
-		return
-	move()
-	check_food_eaten()
-	
-# move all the segments along by one
-func move():
-	for i in range(len(snake_data)):
-		if i > 0:
-			snake_data[i] = old_data[i - 1]
-		snake[i].position = (snake_data[i] * cell_size) + Vector2(0, cell_size)
-
-func check_out_of_bounds():
-	if snake_data[0].x < 0 or snake_data[0].x > cells - 1 or snake_data[0].y < 0 or snake_data[0].y > cells - 1:
+	# check and end game if needed
+	var new_head_pos = snake[0] + move_direction
+	var should_end_game = check_game_over(new_head_pos)
+	if should_end_game:
 		end_game()
-		
-func check_self_eaten():
-	for i in range(1, len(snake_data)):
-		if snake_data[0] == snake_data[i]:
-			end_game()
-			
-func check_food_eaten():
-	# if snake eats the food, add a segment and move the food
-	if snake_data[0] == food_pos:
-		score += 1
-		$Hud.get_node("ScoreLabel").text = "Score: " + str(score)
-		add_segment(old_data[-1])
+		return
+
+	# Game not over, let's move the snake
+	move(new_head_pos)
+	
+func check_game_over(new_head_pos):
+	# check if the snake has hit itself
+	for i in snake:
+		if new_head_pos == i:
+			return true
+	# check if snake went off-screen
+	if new_head_pos.x < 0 or new_head_pos.x > cells - 1 or new_head_pos.y < 0 or new_head_pos.y > cells - 1:
+		return true
+	return false
+
+# move all the segments along by one
+func move(new_head_pos):
+	# move the head
+	add_segment(new_head_pos)
+
+	# conditionally remove the tail
+	if (on_food()):
+		eat_food()
 		move_food()
+	else:
+		remove_tail()
+
+func on_food():
+	return snake[0] == food_pos
+
+# Add one to score
+func eat_food():
+	score += 1
+	$Hud.get_node("ScoreLabel").text = "Score: " + str(score)
 	
 func move_food():
 	while regen_food:
 		regen_food = false
 		food_pos = Vector2(randi_range(0, cells - 1), randi_range(0, cells - 1))
-		for i in snake_data:
+		for i in snake:
 			if food_pos == i:
 				regen_food = true
 	$Food.position = (food_pos * cell_size) + Vector2(0, cell_size)
