@@ -31,7 +31,7 @@ var direction_queue = [up]
 func _ready():
 	new_game()
 
-#* Called every frame--
+#* Called every frame
 func _process(_delta):
 	read_input()
 # endregion
