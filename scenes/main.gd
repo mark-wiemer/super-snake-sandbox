@@ -34,6 +34,10 @@ func _ready():
 #* Called every frame
 func _process(_delta):
 	read_input()
+	
+func _input(_event):
+	if Input.is_action_pressed("quit"):
+		get_tree().quit()
 # endregion
 
 # region "New game" functions
@@ -66,7 +70,7 @@ func start_game():
 	$TickTimer.start()
 # endregion
 	
-func read_input():
+func read_input():	
 	# update movement from keypresses
 	var move_direction = direction_queue.back()
 	if Input.is_action_just_pressed("move_down") and move_direction != up and move_direction != down:
