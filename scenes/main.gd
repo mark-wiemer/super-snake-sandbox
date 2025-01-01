@@ -69,13 +69,13 @@ func start_game():
 func read_input():
 	# update movement from keypresses
 	var move_direction = direction_queue.back()
-	if Input.is_action_just_pressed("move_down") and move_direction != up:
+	if Input.is_action_just_pressed("move_down") and move_direction != up and move_direction != down:
 		direction_queue.push_back(down)
-	if Input.is_action_just_pressed("move_up") and move_direction != down:
+	if Input.is_action_just_pressed("move_up") and move_direction != down and move_direction != up:
 		direction_queue.push_back(up)
-	if Input.is_action_just_pressed("move_left") and move_direction != right:
+	if Input.is_action_just_pressed("move_left") and move_direction != right and move_direction != left:
 		direction_queue.push_back(left)
-	if Input.is_action_just_pressed("move_right") and move_direction != left:
+	if Input.is_action_just_pressed("move_right") and move_direction != left and move_direction != right:
 		direction_queue.push_back(right)
 
 func _on_move_timer_timeout():
