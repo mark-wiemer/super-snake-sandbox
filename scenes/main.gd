@@ -4,6 +4,7 @@ extends Node
 
 # game variables
 var score: int
+var game_over = false
 
 # grid variables
 var cells: int = 20
@@ -38,6 +39,7 @@ func _process(_delta):
 
 # region "New game" functions
 func new_game():
+	game_over = false
 	get_tree().paused = false
 	get_tree().call_group("segments", "queue_free") # remove old segments
 	$GameOverMenu.hide()
@@ -87,15 +89,20 @@ func _on_move_timer_timeout():
 	# use the snake's previous position to move the segments
 	old_data = [] + snake_data
 	snake_data[0] += move_direction
+	check_out_of_bounds()
+	check_self_eaten()
+	if (game_over):
+		return
+	move()
+	check_food_eaten()
+	
+# move all the segments along by one
+func move():
 	for i in range(len(snake_data)):
-		# move all the segments along by one
 		if i > 0:
 			snake_data[i] = old_data[i - 1]
 		snake[i].position = (snake_data[i] * cell_size) + Vector2(0, cell_size)
-	check_out_of_bounds()
-	check_self_eaten()
-	check_food_eaten()
-	
+
 func check_out_of_bounds():
 	if snake_data[0].x < 0 or snake_data[0].x > cells - 1 or snake_data[0].y < 0 or snake_data[0].y > cells - 1:
 		end_game()
@@ -124,6 +131,7 @@ func move_food():
 	regen_food = true
 
 func end_game():
+	game_over = true
 	$GameOverMenu.show()
 	$MoveTimer.stop()
 	get_tree().paused = true
