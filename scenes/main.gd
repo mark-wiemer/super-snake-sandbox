@@ -65,7 +65,7 @@ func add_segment(pos):
 	snake.append(SnakeSegment)
 
 func start_game():
-	$MoveTimer.start()
+	$TickTimer.start()
 # endregion
 	
 func read_input():
@@ -80,7 +80,7 @@ func read_input():
 	if Input.is_action_just_pressed("move_right") and move_direction != left and move_direction != right:
 		direction_queue.push_back(right)
 
-func _on_move_timer_timeout():
+func _on_tick():
 	# Remove the previous direction and jump straight to the next one
 	if (direction_queue.size() > 1):
 		direction_queue.pop_front()
@@ -136,7 +136,7 @@ func move_food():
 func end_game():
 	game_over = true
 	$GameOverMenu.show()
-	$MoveTimer.stop()
+	$TickTimer.stop()
 	get_tree().paused = true
 
 func _on_game_over_menu_restart():

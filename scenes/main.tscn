@@ -17,7 +17,7 @@ texture = ExtResource("2_fps3c")
 
 [node name="Hud" parent="." instance=ExtResource("3_s77pf")]
 
-[node name="MoveTimer" type="Timer" parent="."]
+[node name="TickTimer" type="Timer" parent="."]
 wait_time = 0.1
 
 [node name="Food" type="Sprite2D" parent="."]
@@ -27,5 +27,5 @@ offset = Vector2(25, 25)
 [node name="GameOverMenu" parent="." instance=ExtResource("6_xkat8")]
 process_mode = 2
 
-[connection signal="timeout" from="MoveTimer" to="." method="_on_move_timer_timeout"]
+[connection signal="timeout" from="TickTimer" to="." method="_on_tick"]
 [connection signal="restart" from="GameOverMenu" to="." method="_on_game_over_menu_restart"]
