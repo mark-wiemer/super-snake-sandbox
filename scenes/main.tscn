@@ -9,7 +9,7 @@
 
 [node name="Main" type="Node"]
 script = ExtResource("1_fmw02")
-snake_scene = ExtResource("2_io2sj")
+snake_segment_scene = ExtResource("2_io2sj")
 
 [node name="Background" type="Sprite2D" parent="."]
 position = Vector2(500, 550)
