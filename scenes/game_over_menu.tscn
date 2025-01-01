@@ -1,4 +1,4 @@
-[gd_scene load_steps=6 format=3 uid="uid://cad25ojl47q8"]
+[gd_scene load_steps=8 format=3 uid="uid://cad25ojl47q8"]
 
 [ext_resource type="Script" path="res://scenes/game_over_menu.gd" id="1_k7vgk"]
 
@@ -14,6 +14,12 @@ bg_color = Color(0, 0.572549, 0.631373, 1)
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_8be6j"]
 bg_color = Color(0, 0.611765, 0.172549, 1)
+
+[sub_resource type="InputEventAction" id="InputEventAction_p3oya"]
+action = &"restart"
+
+[sub_resource type="Shortcut" id="Shortcut_3bvue"]
+events = [SubResource("InputEventAction_p3oya")]
 
 [node name="GameOverMenu" type="CanvasLayer"]
 script = ExtResource("1_k7vgk")
@@ -67,6 +73,7 @@ theme_override_font_sizes/font_size = 50
 theme_override_styles/hover = SubResource("StyleBoxFlat_l65v3")
 theme_override_styles/pressed = SubResource("StyleBoxFlat_u4ktg")
 theme_override_styles/normal = SubResource("StyleBoxFlat_8be6j")
+shortcut = SubResource("Shortcut_3bvue")
 text = " Play again "
 
 [connection signal="pressed" from="GameOverPanel/RestartButton" to="." method="_on_restart_button_pressed"]
