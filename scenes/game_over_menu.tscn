@@ -74,6 +74,7 @@ theme_override_styles/hover = SubResource("StyleBoxFlat_l65v3")
 theme_override_styles/pressed = SubResource("StyleBoxFlat_u4ktg")
 theme_override_styles/normal = SubResource("StyleBoxFlat_8be6j")
 shortcut = SubResource("Shortcut_3bvue")
+shortcut_feedback = false
 text = " Play again "
 
 [connection signal="pressed" from="GameOverPanel/RestartButton" to="." method="_on_restart_button_pressed"]
