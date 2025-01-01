@@ -79,7 +79,7 @@ func read_input():
 		direction_queue.push_back(right)
 
 func _on_move_timer_timeout():
-	#	Remove the previous direction and jump straight to the next one
+	# Remove the previous direction and jump straight to the next one
 	if (direction_queue.size() > 1):
 		direction_queue.pop_front()
 	var move_direction = direction_queue.front()
