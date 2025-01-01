@@ -96,6 +96,7 @@ func _on_move_timer_timeout():
 	move()
 	if (should_eat()):
 		eat_food()
+		move_food()
 	
 # move all the segments along by one
 func move():
@@ -121,7 +122,6 @@ func eat_food():
 	score += 1
 	$Hud.get_node("ScoreLabel").text = "Score: " + str(score)
 	add_segment(old_data[-1])
-	move_food()
 	
 func move_food():
 	while regen_food:
