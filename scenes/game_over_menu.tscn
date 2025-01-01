@@ -1,6 +1,5 @@
 [gd_scene load_steps=7 format=3 uid="uid://cad25ojl47q8"]
 
-[ext_resource type="FontFile" uid="uid://ctijp6avftrtc" path="res://assets/MaldiniBold.ttf" id="1_4cjqx"]
 [ext_resource type="Script" path="res://scenes/game_over_menu.gd" id="1_k7vgk"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_hy06m"]
