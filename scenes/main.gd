@@ -1,6 +1,8 @@
 extends Node
 
 @export var snake_segment_scene: PackedScene
+# To avoid visual jitter, pre-render the "new tail"
+var backup_segment: ColorRect
 
 # game variables
 var score: int
@@ -52,25 +54,34 @@ func new_game():
 	generate_snake()
 	move_food()
 	start_game()
-	
+
+# Make backup_segment point to a new instance.
+# Does not free the old backup_segment!
+func reset_backup_segment():
+	backup_segment = snake_segment_scene.instantiate()
+	backup_segment.hide()
+	add_child(backup_segment)
+
 func generate_snake():
 	snake_data.clear()
 	snake_segments.clear()
+	reset_backup_segment()
 	for i in range(3):
 		add_segment(start_pos + Vector2(0, i))
 		
 func add_segment(pos):
 	snake_data.append(pos)
-	var SnakeSegment = snake_segment_scene.instantiate()
+	backup_segment.show()
+	var SnakeSegment = backup_segment
 	SnakeSegment.position = (pos * cell_size) + Vector2(0, cell_size)
-	add_child(SnakeSegment)
 	snake_segments.append(SnakeSegment)
+	reset_backup_segment()
 
 func start_game():
 	$TickTimer.start()
 # endregion
 	
-func read_input():	
+func read_input():
 	# update movement from keypresses
 	var move_direction = direction_queue.back()
 	if Input.is_action_just_pressed("move_down") and move_direction != up and move_direction != down:
@@ -95,7 +106,7 @@ func _on_tick():
 		end_game()
 		return
 	move(new_head_pos)
-	if (should_eat()):
+	if (should_eat(new_head_pos)):
 		eat_food(old_tail_pos)
 		move_food()
 	
@@ -116,14 +127,13 @@ func move(new_head_pos):
 	for i in range(len(snake_data)):
 		snake_segments[i].position = (snake_data[i] * cell_size) + Vector2(0, cell_size)
 			
-func should_eat():
-	return snake_data[0] == food_pos
+func should_eat(new_head_pos):
+	return new_head_pos == food_pos
 
 func eat_food(old_tail_pos):
-	# if snake_segments eats the food, add a segment and move the food
+	add_segment(old_tail_pos)
 	score += 1
 	$Hud.get_node("ScoreLabel").text = "Score: " + str(score)
-	add_segment(old_tail_pos)
 	
 func move_food():
 	while regen_food:
