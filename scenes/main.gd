@@ -6,7 +6,6 @@ var backup_segment: ColorRect
 
 # game variables
 var score: int
-var game_over = false
 
 # grid variables
 var cells: int = 20
@@ -43,7 +42,6 @@ func _input(_event):
 
 # region "New game" functions
 func new_game():
-	game_over = false
 	get_tree().paused = false
 	get_tree().call_group("segments", "queue_free") # remove old segments
 	$GameOverMenu.hide()
@@ -63,10 +61,9 @@ func reset_backup_segment():
 	add_child(backup_segment)
 
 func generate_snake():
-	snake_data.clear()
 	snake_segments.clear()
 	reset_backup_segment()
-	snake_data = SnakeModel.generate_snake(start_pos, down, 3)
+	snake_data = SnakeModel.generate_snake(start_pos, -direction_queue[0], 3)
 	for pos in snake_data:
 		add_segment(pos)
 		
@@ -98,7 +95,7 @@ func _on_tick():
 		cells,
 		direction_queue,
 		food_pos,
-		game_over,
+		false,
 		score,
 		snake_data,
 	))
