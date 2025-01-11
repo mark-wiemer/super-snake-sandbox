@@ -121,7 +121,6 @@ func _on_tick():
 		snake_segments[i].position = (snake_data[i] * cell_size) + Vector2(0, cell_size)
 
 func end_game():
-	game_over = true
 	$GameOverMenu.show()
 	$TickTimer.stop()
 	get_tree().paused = true
