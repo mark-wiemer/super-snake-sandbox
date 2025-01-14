@@ -1,20 +1,33 @@
 class_name SnakeModel extends Node
 
 class State:
-	var cells: int = 20
-	var direction_queue: Array[Vector2] = []
-	var food_pos: Vector2 = Vector2(0, 0)
-	var game_over: bool = false
-	var score: int = 0
-	var snake: Array[Vector2] = []
+	## Fixed delay in ticks between adding another box
+	var box_delay: int
+	## Remaining delay in ticks before adding another box
+	## If zero, a box will be added this tick
+	var box_time: int
+	var boxes: Array[Vector2]
+	var cells: int
+	var direction_queue: Array[Vector2]
+	var food_pos: Vector2
+	var game_over: bool
+	var score: int
+	var snake: Array[Vector2]
+
 	func _init(
+		box_delay: int,
+		box_time: int,
+		boxes: Array[Vector2],
 		cells: int,
 		direction_queue: Array[Vector2],
 		food_pos: Vector2,
 		game_over: bool,
 		score: int,
-		snake: Array[Vector2]
+		snake: Array[Vector2],
 	):
+		self.box_delay = box_delay
+		self.box_time = box_time
+		self.boxes = boxes
 		self.cells = cells
 		self.direction_queue = direction_queue
 		self.food_pos = food_pos
@@ -22,7 +35,17 @@ class State:
 		self.score = score
 		self.snake = snake
 	func duplicate() -> State:
-		return State.new(cells, direction_queue.duplicate(), food_pos, game_over, score, snake.duplicate())
+		return State.new(
+			box_delay,
+			box_time,
+			boxes.duplicate(),
+			cells,
+			direction_queue.duplicate(),
+			food_pos,
+			game_over,
+			score,
+			snake.duplicate(),
+		)
 		
 ## Generates a snake. Pure func
 ## start: start cell
@@ -63,6 +86,12 @@ static func tick(state: State) -> State:
 		new_state.snake.push_back(old_tail_pos)
 		new_state.score += 1
 		new_state.food_pos = move_food(new_state.snake, new_state.cells)
+	# place boxes
+	if (new_state.box_time == 0):
+		new_state.boxes.push_back(Vector2(randi_range(0, new_state.cells - 1), randi_range(0, new_state.cells - 1)))
+		new_state.box_time = new_state.box_delay
+	else:
+		new_state.box_time -= 1
 	return new_state
 
 ## pure
